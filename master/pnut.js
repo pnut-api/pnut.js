@@ -150,7 +150,9 @@ if (typeof module !== 'undefined')
   module.exports = jQuery.pnut;
 }
 
-/*global jQuery: true */ (function ($) { 'use strict';
+/*global jQuery: true */
+(function ($) {
+'use strict';
   $.pnut.endpoints = {
     "format_version": 3,
     "data_version": 5,
@@ -1343,7 +1345,8 @@ if (typeof module !== 'undefined')
             "link": "http://developers.app.net/docs/resources/config/#retrieve-the-configuration-object"
         }
     ]
-}; (jQuery));
+};
+}(jQuery));
 /*
  * core.js
  *
