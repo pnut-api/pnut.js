@@ -1,6 +1,6 @@
 ## Note
 
-This is an incomplete conversion of https://github.com/duerig/appnet.js. Files, Search, Places, and App/user stream references are not valid (not implemented by the pnut.io API yet).
+This is an incomplete conversion of https://github.com/duerig/appnet.js. Places, and App stream references are not valid (not implemented by the Pnut.io API yet).
 
 # pnut.js
 
