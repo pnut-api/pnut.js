@@ -164,18 +164,24 @@ if (typeof module !== 'undefined')
         "public_messages": "Send and receive public messages as this user",
         "messages": "Send and receive public and private messages as this user",
         "update_profile": "Update a user's name, images, and other profile information",
-        "presence": ""
+        "files": "Manage a user's files. This is not needed for uploading files.",
+        "presence": "",
+        "polls": ""
     },
     "stream_types": [
         "user",
         "post",
         "channel",
         "message",
+        "file",
+        "UserStream",
         "interaction",
         "marker",
         "text",
         "token",
-        "config"
+        "explore",
+        "config",
+        "poll"
     ],
     "migrations": [ ],
     "parameter_category": {
@@ -192,6 +198,9 @@ if (typeof module !== 'undefined')
         "general_message": [ "include_muted", "include_deleted",
                              "include_raw", "include_user_raw", "include_message_raw", 
                              "include_html", "connection_id" ],
+        "general_file":    [ "file_types", "include_incomplete", "include_private",
+                             "include_annotations", "include_file_annotations", "include_user_annotations",
+                             "connection_id" ],
 
         "user":            [ "name", "locale", "timezone", "content" ],
         "avatar":          "image",
@@ -200,12 +209,19 @@ if (typeof module !== 'undefined')
         "channel":         [ "acl", "raw", "type" ],
         "message":         [ "text", "reply_to", "raw", "entities", "destinations" ],
         "content":         "content",
+        "file":            [ "kind", "type", "name", "is_public", "raw" ],
+        "UserStream":      [ ],
         "marker":          [ "id", "name", "percentage" ],
         "post_or_message": [ "text" ],
+        "post_search":     [ ],
+        "user_search":     [ ],
+        "channel_search":  [ ],
         "user_ids":    [ "ids" ],
         "post_ids":    [ "ids" ],
         "channel_ids": [ "ids" ],
-        "message_ids": [ "ids" ]
+        "message_ids": [ "ids" ],
+        "file_ids":    [ "ids" ],
+        "poll_ids":    [ "ids" ]
     },
     "base": "https://api.pnut.io/v0/",
     "endpoints": [
@@ -484,6 +500,23 @@ if (typeof module !== 'undefined')
             "link": "http://developers.app.net/docs/resources/user/lookup/#retrieve-multiple-users"
         },
         {
+            "id": "113",
+            "group": "user",
+            "name": "search",
+            "url_params": [],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "user_search", "general_user" ],
+            "method": "GET",
+            "url": [
+                "users/search"
+            ],
+            "token": "Any",
+            "scope": "basic",
+            "description": "Search for Users",
+            "link": "http://developers.app.net/docs/resources/user/lookup/#search-for-users"
+        },
+        {
             "id": "114",
             "group": "user",
             "name": "getFollowing",
@@ -532,7 +565,7 @@ if (typeof module !== 'undefined')
             ],
             "data_params": [],
             "array_params": [],
-	    "get_params": [ "general_user" ],
+        "get_params": [ "general_user" ],
             "method": "GET",
             "url": [
                 "users/",
@@ -576,7 +609,7 @@ if (typeof module !== 'undefined')
             "method": "GET",
             "url": [
                 "posts/",
-                "/actions"
+                "/interactions"
             ],
             "token": "Any",
             "scope": "basic",
@@ -690,7 +723,7 @@ if (typeof module !== 'undefined')
             "data_params": [],
             "array_params": [],
             "get_params": [ "general_post" ],
-            "method": "POST",
+            "method": "PUT",
             "url": [
                 "posts/",
                 "/bookmark"
@@ -890,6 +923,43 @@ if (typeof module !== 'undefined')
             "link": "http://developers.app.net/docs/resources/post/streams/#retrieve-the-global-stream"
         },
         {
+            "id": "216",
+            "group": "post",
+            "name": "report",
+            "url_params": [
+                "post_id"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "general_post" ],
+            "method": "POST",
+            "url": [
+                "posts/",
+                "/report"
+            ],
+            "token": "User",
+            "scope": "basic",
+            "description": "Report a Post",
+            "link": "http://developers.app.net/docs/resources/post/report/#report-a-post"
+        },
+        {
+            "id": "217",
+            "group": "post",
+            "name": "search",
+            "url_params": [],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "post_search", "general_post" ],
+            "method": "GET",
+            "url": [
+                "posts/search"
+            ],
+            "token": "Any",
+            "scope": "basic",
+            "description": "Search for Posts",
+            "link": "http://developers.app.net/docs/resources/post/search/#search-for-posts"
+        },
+        {
             "id": "300",
             "group": "channel",
             "name": "getUserSubscribed",
@@ -1019,6 +1089,27 @@ if (typeof module !== 'undefined')
             "link": "http://developers.app.net/docs/resources/channel/lifecycle/#update-a-channel"
         },
         {
+            "id": "310",
+            "group": "channel",
+            "name": "deactivate",
+            "url_params": [
+                "channel_id"
+            ],
+            "data_params": [
+                "channel"
+            ],
+            "array_params": [],
+            "get_params": [ "general_channel" ],
+            "method": "DELETE",
+            "url": [
+                "channels/"
+            ],
+            "token": "User",
+            "scope": "messages",
+            "description": "Deactivate a Channel",
+            "link": "http://developers.app.net/docs/resources/channel/lifecycle/#deactivate-a-channel"
+        },
+        {
             "id": "307",
             "group": "channel",
             "name": "subscribe",
@@ -1134,6 +1225,23 @@ if (typeof module !== 'undefined')
             "scope": "messages",
             "description": "Get current user's muted Channels",
             "link": "http://developers.app.net/docs/resources/channel/muting/#get-current-users-muted-channels"
+        },
+        {
+            "id": "315",
+            "group": "channel",
+            "name": "search",
+            "url_params": [],
+            "data_params": [],
+            "array_params": [],
+        "get_params": [ "channel_search", "general_channel" ],
+            "method": "GET",
+            "url": [
+                "channels/search"
+            ],
+            "token": "User",
+            "scope": "public_messages",
+            "description": "Search for Channels",
+            "link": "http://developers.app.net/docs/resources/channel/search/#search-for-channels"
         },
         {
             "id": "400",
@@ -1256,6 +1364,221 @@ if (typeof module !== 'undefined')
             "link": "http://developers.app.net/docs/resources/message/lifecycle/#delete-a-message"
         },
         {
+            "id": "801",
+            "group": "file",
+            "name": "create",
+            "url_params": [],
+            "data_params": [
+                "file"
+            ],
+            "array_params": [],
+            "get_params": [ "general_file" ],
+            "method": "POST-RAW",
+            "url": [
+                "files"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Create a File",
+            "link": "http://developers.app.net/docs/resources/file/lifecycle/#create-a-file"
+        },
+        {
+            "id": "802",
+            "group": "file",
+            "name": "createPlaceholder",
+            "url_params": [],
+            "data_params": [
+                "file"
+            ],
+            "array_params": [],
+            "get_params": [ "general_file" ],
+            "method": "POST",
+            "url": [
+                "files"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Create a File Placeholder",
+            "link": "http://developers.app.net/docs/resources/file/lifecycle/#create-a-file"
+        },
+        {
+            "id": "803",
+            "group": "file",
+            "name": "get",
+            "url_params": [
+                "file_id"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "general_file" ],
+            "method": "GET",
+            "url": [
+                "files/"
+            ],
+            "token": "User",
+            "scope": "basic",
+            "description": "Retrieve a File",
+            "link": "http://developers.app.net/docs/resources/file/lookup/#retrieve-a-file"
+        },
+        {
+            "id": "804",
+            "group": "file",
+            "name": "getList",
+            "url_params": [],
+            "data_params": [],
+            "array_params": [
+                "file_ids"
+            ],
+            "get_params": [ "general_file" ],
+            "method": "GET",
+            "url": [
+                "files"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Retrieve multiple Files",
+            "link": "http://developers.app.net/docs/resources/file/lookup/#retrieve-multiple-files"
+        },
+        {
+            "id": "805",
+            "group": "file",
+            "name": "destroy",
+            "url_params": [
+                "file_id"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "general_file" ],
+            "method": "DELETE",
+            "url": [
+                "files/"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Delete a File",
+            "link": "http://developers.app.net/docs/resources/file/lifecycle/#delete-a-file"
+        },
+        {
+            "id": "806",
+            "group": "file",
+            "name": "getUser",
+            "url_params": [],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "general_file", "pagination" ],
+            "method": "GET",
+            "url": [
+                "users/me/files"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Retrieve my Files",
+            "link": "http://developers.app.net/docs/resources/file/lookup/#retrieve-my-files"
+        },
+        {
+            "id": "807",
+            "group": "file",
+            "name": "update",
+            "url_params": [
+                "file_id"
+            ],
+            "data_params": [
+                "file"
+            ],
+            "array_params": [],
+            "get_params": [ "general_file" ],
+            "method": "PUT",
+            "url": [
+                "files/"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Update a File",
+            "link": "http://developers.app.net/docs/resources/file/lifecycle/#update-a-file"
+        },
+        {
+            "id": "808",
+            "group": "file",
+            "name": "getContent",
+            "url_params": [
+                "file_id"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [  ],
+            "method": "GET",
+            "url": [
+                "files/",
+                "/content"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Get File content",
+            "link": "http://developers.app.net/docs/resources/file/content/#get-file-content"
+        },
+        {
+            "id": "809",
+            "group": "file",
+            "name": "setContent",
+            "url_params": [
+                "file_id"
+            ],
+            "data_params": [
+                "content"
+            ],
+            "array_params": [],
+            "get_params": [ ],
+            "method": "PUT",
+            "url": [
+                "files/",
+                "/content"
+            ],
+            "token": "User",
+            "scope": "files",
+            "description": "Set File content",
+            "link": "http://developers.app.net/docs/resources/file/content/#set-file-content"
+        },
+        {
+            "id": "701",
+            "group": "UserStream",
+            "name": "destroy",
+            "url_params": [
+                "connection_id"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [],
+            "method": "DELETE",
+            "url": [
+                "users/me/streams/"
+            ],
+            "token": "user",
+            "scope": "basic",
+            "description": "Delete a User Stream",
+            "link": "http://developers.app.net/docs/resources/user-stream/lifecycle/#delete-a-user-stream"
+        },
+        {
+            "id": "702",
+            "group": "UserStream",
+            "name": "destroySubscription",
+            "url_params": [
+                "connection_id",
+                "subscription_id"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [],
+            "method": "DELETE",
+            "url": [
+                "users/me/streams/",
+                "/"
+            ],
+            "token": "user",
+            "scope": "basic",
+            "description": "Delete a User Stream Subscription",
+            "link": "http://developers.app.net/docs/resources/user-stream/lifecycle/#delete-a-user-stream-subscription"
+        },
+        {
             "id": "900",
             "group": "interaction",
             "name": "get",
@@ -1265,7 +1588,7 @@ if (typeof module !== 'undefined')
             "get_params": [ "pagination" ],
             "method": "GET",
             "url": [
-                "users/me/actions"
+                "users/me/interactions"
             ],
             "token": "User",
             "scope": "basic",
@@ -1326,6 +1649,40 @@ if (typeof module !== 'undefined')
             "scope": "basic",
             "description": "Retrieve the current token",
             "link": "http://developers.app.net/docs/resources/token/#retrieve-current-token"
+        },
+        {
+            "group": "explore",
+            "name": "show",
+            "url_params": [],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ ],
+            "method": "GET",
+            "url": [
+                "posts/streams/explore"
+            ],
+            "token": "None",
+            "scope": "basic",
+            "description": "Retrieve all Explore Streams",
+            "link": "http://developers.app.net/docs/resources/explore/#retrieve-all-explore-streams"
+        },
+        {
+            "group": "explore",
+            "name": "get",
+            "url_params": [
+                "slug"
+            ],
+            "data_params": [],
+            "array_params": [],
+            "get_params": [ "pagination" ],
+            "method": "GET",
+            "url": [
+                "posts/streams/explore/"
+            ],
+            "token": "None",
+            "scope": "basic",
+            "description": "Retrieve an Explore Stream",
+            "link": "http://developers.app.net/docs/resources/explore/#retrieve-an-explore-stream"
         },
         {
             "id": "1500",
